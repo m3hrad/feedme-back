@@ -100,4 +100,4 @@ INSERT INTO ingredients (ID, name, city, vegan, vegetarian, gluten_free, low_car
   VALUES (1, 'egg', 1, FALSE , FALSE , TRUE , FALSE , TRUE , TRUE , FALSE , 1, 1);
 
 INSERT INTO recipe_ingredients (ID,recipe_id, ingredient_id, quantity)
-  VALUES (1, 1, 1, 4)
+  VALUES (1, 1, 1, 4);

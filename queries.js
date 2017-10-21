@@ -6,7 +6,9 @@ var options = {
 };
 
 var pgp = require('pg-promise')(options);
-var connectionString = 'postgres://feedme:feedme@localhost:5432/feedme';
+
+var connectionString = process.env.DATABASE_URL || 'postgres://feedme:feedme@localhost:5432/feedme';
+
 var db = pgp(connectionString);
 
 // add query functions
@@ -28,5 +30,5 @@ function getAllRecipes(req, res, next) {
 
 
 module.exports = {
-    getAllRecipes: getAllRecipes,
+    getAllRecipes: getAllRecipes
 };
