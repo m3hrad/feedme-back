@@ -7,12 +7,12 @@ supported endpoints are:
 - get all the recipes: /api/recipes
 
 
-### Getting Started
+## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development.
 
 
-### Prerequisites
+## Prerequisites
 
 Using Homebrew on Mac systems: 
 
@@ -26,7 +26,7 @@ Postgres:
 
 
 
-### Installing
+## Installing
 
 #### local
 
@@ -64,7 +64,7 @@ connect to the remote databse:
 Then you need to execute the commands in feedme.sql
     
 
-### Deployment
+## Deployment
 
 #### local
 
@@ -75,8 +75,9 @@ start the postgres server:
 run the server:
 
     npm start
-    
-    
+
+At this point the server should be executed on http://localhost:3000/ .
+
 #### Heroku
 
 push the changes to Heroku:
@@ -84,6 +85,6 @@ push the changes to Heroku:
     git push heroku master
 
 
-### Built With
+## Built With
 
 * [Express application generator](https://expressjs.com/en/starter/generator.html)
