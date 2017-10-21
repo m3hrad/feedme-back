@@ -7,6 +7,7 @@
     "postinstall": "psql feedme -f feedme.sql"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
