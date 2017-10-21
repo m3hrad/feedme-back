@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "postinstall": "psql feedme -f feedme.sql"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -11,6 +12,7 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "morgan": "~1.8.1",
+    "pg-promise": "^7.0.2",
     "pug": "~2.0.0-beta11",
     "serve-favicon": "~2.4.2"
   }
