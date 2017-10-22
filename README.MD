@@ -1,12 +1,18 @@
 # Feed Me
 
-The backend system of the Feed Me project.
+The backend system of the Feed Me project. The backend is live on the url:
+https://feedme-backend.herokuapp.com
 
-### Getting Started
+supported endpoints are:
+- get all the recipes: /api/recipes
+
+
+## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development.
 
-###Prerequisites
+
+## Prerequisites
 
 Using Homebrew on Mac systems: 
 
@@ -19,7 +25,10 @@ Postgres:
     brew install postgres
 
 
-###Installing
+
+## Installing
+
+#### local
 
 setup the database cluster: 
 
@@ -37,13 +46,27 @@ Create the database :
 
     create database feedme;
     
+Execute the sql commands in feedme.sql file:
+
+    psql feedme -f feedme.sql
     
 install the server:
 
     npm install
+    
 
+#### Heroku
 
-###Deployment
+connect to the remote databse: 
+    
+    heroku pg:psql -a feedme-backend
+    
+Then you need to execute the commands in feedme.sql
+    
+
+## Deployment
+
+#### local
 
 start the postgres server:
     
@@ -52,9 +75,16 @@ start the postgres server:
 run the server:
 
     npm start
-   
-  
 
-###Built With
+At this point the server should be executed on http://localhost:3000/ .
+
+#### Heroku
+
+push the changes to Heroku:
+
+    git push heroku master
+
+
+## Built With
 
 * [Express application generator](https://expressjs.com/en/starter/generator.html)
