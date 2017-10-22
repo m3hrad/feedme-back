@@ -5,6 +5,8 @@ https://feedme-backend.herokuapp.com
 
 supported endpoints are:
 - get all the recipes: /api/recipes
+- get one recipe: /api/recipes/:id 
+example: https://feedme-backend.herokuapp.com/api/recipes/1
 
 
 ## Getting Started
