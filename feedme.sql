@@ -46,7 +46,7 @@ CREATE TABLE cities (
 CREATE TABLE ingredients (
   ID SERIAL PRIMARY KEY,
   name VARCHAR,
-  city INTEGER REFERENCES cities (ID),
+  city_id INTEGER REFERENCES cities (ID),
   vegan BOOLEAN,
   vegetarian BOOLEAN,
   gluten_free BOOLEAN,
@@ -55,8 +55,8 @@ CREATE TABLE ingredients (
   dairy_free BOOLEAN,
   low_fat BOOLEAN,
   ethnicity VARCHAR,
-  brand INTEGER REFERENCES brands (ID),
-  shop INTEGER REFERENCES shops (ID)
+  brand_id INTEGER REFERENCES brands (ID),
+  shop_id INTEGER REFERENCES shops (ID)
 );
 
 CREATE TABLE recipe_ingredients (
@@ -89,14 +89,13 @@ INSERT INTO users (ID, username, admin)
 INSERT INTO brands (ID, name)
   VALUES (1, 'PIRKKA');
 
-
 INSERT INTO shop_city (ID,shop_id, city_id)
   VALUES (1,1,1);
 
 INSERT INTO recipes ( ID, user_id, name, description, duration, easy)
   VALUES (1, 1, 'Fried Eggs', 'easy and yummy!', 5, TRUE );
 
-INSERT INTO ingredients (ID, name, city, vegan, vegetarian, gluten_free, low_carb, protein_rich, dairy_free, low_fat, brand, shop)
+INSERT INTO ingredients (ID, name, city_id, vegan, vegetarian, gluten_free, low_carb, protein_rich, dairy_free, low_fat, brand_id, shop_id)
   VALUES (1, 'egg', 1, FALSE , FALSE , TRUE , FALSE , TRUE , TRUE , FALSE , 1, 1);
 
 INSERT INTO recipe_ingredients (ID,recipe_id, ingredient_id, quantity)

@@ -7,7 +7,7 @@ var options = {
 
 var pgp = require('pg-promise')(options);
 
-var connectionString = process.env.DATABASE_URL || 'postgres://feedme:feedme@localhost:5432/feedme';
+var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/feedme';
 
 var db = pgp(connectionString);
 
@@ -28,7 +28,45 @@ function getAllRecipes(req, res, next) {
         });
 }
 
+function getSingleRecipe(req, res, next) {
+    //get the recipe info
+    db.any('select * from recipes where id = $1', parseInt(req.params.id))
+        .then(function (recipeData) {
+            //get the ingredients list
+            db.any('select ingredient_id from recipe_ingredients where recipe_id = $1', parseInt(req.params.id))
+                .then(function(ingredientsIDs){
+                    var ingredientIdsArray = [];
+                    for(var i = 0; i < ingredientsIDs.length; i++) {
+                        ingredientIdsArray.push(ingredientsIDs[i].ingredient_id);
+                    }
+                    //get the ingredients
+                    db.any("select i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
+                        "i.low_fat, i.ethnicity, b.name as brand_name, sh.name as shop_name, c.name as city_name from ingredients i" +
+                        " INNER JOIN shops sh ON i.shop_id = sh.id JOIN brands b ON i.brand_id = b.id JOIN cities c ON " +
+                        "i.city_id = c.ID where i.ID = ANY($1::int[])", [ingredientIdsArray])
+                        .then(function(ingredients){
+                            recipeData[0].ingredients = ingredients;
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: recipeData,
+                                    message: 'Retrieved the recipe'
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+}
 
 module.exports = {
-    getAllRecipes: getAllRecipes
+    getAllRecipes: getAllRecipes,
+    getSingleRecipe: getSingleRecipe
 };
