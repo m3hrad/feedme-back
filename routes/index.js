@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/api/recipes', db.getAllRecipes);
 router.get('/api/recipes/:id', db.getSingleRecipe);
-// router.post('/api/recipes', db.createRecipe);
+router.post('/api/recipes', db.createRecipe);
 // router.put('/api/recipes/:id', db.updateRecipe);
 // router.delete('/api/recipes/:id', db.removeRecipe);
 //

@@ -13,7 +13,7 @@ CREATE TABLE users (
 CREATE TABLE recipes (
   ID SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users (ID),
-  name VARCHAR,
+  name VARCHAR UNIQUE,
   description VARCHAR,
   recipe_text VARCHAR,
   duration FLOAT,

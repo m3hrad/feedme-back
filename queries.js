@@ -66,7 +66,32 @@ function getSingleRecipe(req, res, next) {
         });
 }
 
+function createRecipe(req, res ,next){
+    var user_id = parseInt(req.body.user_id);
+    var name = req.body.name;
+    var description = req.body.description || '';
+    var recipe_text = req.body.recipe_text || '';
+    var duration = req.body.duration || null;
+    var easy = req.body.easy || false;
+    var link = req.body.link || null;
+
+    db.any('INSERT into recipes (user_id, name, description, recipe_text, duration, easy, link) VALUES' +
+        '($1, $2, $3, $4, $5, $6, $7)',[user_id, name, description, recipe_text, duration, easy, link])
+        .then(function (data) {
+            res.status(200)
+                .json({
+                    status: 'success',
+                    data: data,
+                    message: 'Retrieved ALL recipes'
+                });
+        })
+        .catch(function (err) {
+            return next(err);
+        });
+}
+
 module.exports = {
     getAllRecipes: getAllRecipes,
-    getSingleRecipe: getSingleRecipe
+    getSingleRecipe: getSingleRecipe,
+    createRecipe: createRecipe
 };
