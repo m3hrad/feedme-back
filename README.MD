@@ -3,11 +3,68 @@
 The backend system of the Feed Me project. The backend is live on the url:
 https://feedme-backend.herokuapp.com
 
-supported endpoints are:
-- get all the recipes: /api/recipes
-- get one recipe: /api/recipes/:id 
-example: https://feedme-backend.herokuapp.com/api/recipes/1
+## Endpoints:
 
+#### recipes
+
+* get all the recipes: /api/recipes (get)
+
+* get one recipe: /api/recipes/:id (get)
+
+    example: https://feedme-backend.herokuapp.com/api/recipes/1
+    
+* search for the recipes by name: /api/recipes?name='name'
+
+    example /api/recipes?name=Egg
+
+* create a recipe: /api/recipes (post)
+
+    fields: 
+    * user_id (mandatory)
+    * name (mandatory)
+    * description
+    * recipe_text
+    * duration
+    * easy
+    * link
+   
+* delete a recipe: /api/recipes/:id (delete)
+
+#### ingredients
+
+* get all the ingredients: /api/ingredients (get)
+
+* get one ingredient: /api/ingredients/:id (get)
+
+* search for the ingredients by name: /api/ingredients?name='name'
+
+    example /api/ingredients?name=egg
+
+* create an ingredient: /api/ingredients (post)
+
+    fields:
+    * name (mandatory)
+    * city_id
+    * vegan
+    * vegetarian
+    * gluten_free
+    * low_carb
+    * dairy_free
+    * low_fat
+    * ethnicity
+    * brand_id
+    * shop_id
+    
+* add an ingredient to a recipe: /api/recipes/:id (put)
+
+    example: https://feedme-backend.herokuapp.com/api/recipes/1
+    
+    fields:
+    * ingredient_id (mandatory)
+    * quantity
+    * unit
+    
+* delete and ingredient: /api/ingredients/:id (delete)
 
 ## Getting Started
 
