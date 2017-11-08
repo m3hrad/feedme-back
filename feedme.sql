@@ -7,40 +7,46 @@ CREATE TABLE users (
   ID SERIAL PRIMARY KEY,
   username VARCHAR UNIQUE ,
   token VARCHAR,
-  admin BOOLEAN
+  admin BOOLEAN,
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE recipes (
   ID SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users (ID),
-  name VARCHAR,
+  name VARCHAR UNIQUE,
   description VARCHAR,
   recipe_text VARCHAR,
   duration FLOAT,
   easy BOOLEAN,
-  link VARCHAR
+  link VARCHAR,
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE brands (
   ID SERIAL PRIMARY KEY,
-  name VARCHAR
+  name VARCHAR,
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 -- as chain
 CREATE TABLE shops (
   ID SERIAL PRIMARY KEY,
-  name VARCHAR
+  name VARCHAR,
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE countries (
   ID SERIAL PRIMARY KEY,
-  name VARCHAR UNIQUE
+  name VARCHAR UNIQUE,
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE cities (
   ID SERIAL PRIMARY KEY,
   name VARCHAR,
-  country_id INTEGER REFERENCES countries (ID)
+  country_id INTEGER REFERENCES countries (ID),
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE ingredients (
@@ -56,7 +62,8 @@ CREATE TABLE ingredients (
   low_fat BOOLEAN,
   ethnicity VARCHAR,
   brand_id INTEGER REFERENCES brands (ID),
-  shop_id INTEGER REFERENCES shops (ID)
+  shop_id INTEGER REFERENCES shops (ID),
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE recipe_ingredients (
@@ -64,7 +71,7 @@ CREATE TABLE recipe_ingredients (
   recipe_id INTEGER REFERENCES recipes (ID),
   ingredient_id INTEGER REFERENCES ingredients (ID),
   quantity FLOAT,
-  unit VARCHAR
+  unit VARCHAR,
 );
 
 CREATE TABLE shop_city (
