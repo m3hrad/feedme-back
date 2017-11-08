@@ -14,7 +14,9 @@ var db = pgp(connectionString);
 // add query functions
 
 function getAllRecipes(req, res, next) {
-    const pattern = '%' + req.query.name + '%' || '%';
+    var pattern = typeof req.query.name !== 'undefined' ? '%' + req.query.name + '%' : '%' ;
+    console.log(pattern);
+
     db.any('select * from recipes where deleted = false and name LIKE $1', pattern)
         .then(function (data) {
             res.status(200)
@@ -30,7 +32,7 @@ function getAllRecipes(req, res, next) {
 }
 
 function getAllIngredients(req, res, next) {
-    const pattern = '%' + req.query.name + '%' || '%';
+    var pattern = typeof req.query.name !== 'undefined' ? '%' + req.query.name + '%' : '%' ;
     db.any('select * from ingredients where deleted = false and name LIKE $1', pattern)
         .then(function (data) {
             res.status(200)
