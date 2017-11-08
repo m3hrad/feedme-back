@@ -71,7 +71,7 @@ CREATE TABLE recipe_ingredients (
   recipe_id INTEGER REFERENCES recipes (ID),
   ingredient_id INTEGER REFERENCES ingredients (ID),
   quantity FLOAT,
-  unit VARCHAR,
+  unit VARCHAR
 );
 
 CREATE TABLE shop_city (
