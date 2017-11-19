@@ -13,9 +13,21 @@ https://feedme-backend.herokuapp.com
 
     example: https://feedme-backend.herokuapp.com/api/recipes/1
     
-* search for the recipes by name: /api/recipes?name='name'
+* search for the recipes by different parameters:
+    parameters:
+    * name
+    * vegetarina
+    * vegan
+    * gluten_free
+    * low_carb
+    * protein_rich
+    * dairy_free
+    * low_fat
+    * ethnicity
 
-    example /api/recipes?name=Egg
+/api/recipes?name='name'&veagan=true
+
+    example /api/recipes?name='name'&veagan=true
 
 * create a recipe: /api/recipes (post)
 
