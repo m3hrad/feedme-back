@@ -25,18 +25,40 @@ function getAllRecipes(req, res, next) {
     const low_fat = typeof req.query.low_fat === 'undefined' ? true : 'low_fat = ' + req.query.low_fat;
     const ethnicity = typeof req.query.ethnicity === 'undefined' ? true : 'ethnicity like %' + req.query.ethnicity + '%';
 
-    db.any('select * from recipes where deleted = false and name LIKE $1 and $2:raw and $3:raw and $4:raw and $5:raw' +
-        ' and $6:raw and $7:raw and $8:raw and $9:raw',[name, vegan, vegetarian, gluten_free, low_carb,
-        protein_rich,dairy_free, low_fat, ethnicity])
-        .then(function (data) {
+
+    db.task(t => {
+        return t.map('select * from recipes where deleted = false and name LIKE $1 and $2:raw and $3:raw and $4:raw and $5:raw' +
+            ' and $6:raw and $7:raw and $8:raw and $9:raw',[name, vegan, vegetarian, gluten_free, low_carb,
+            protein_rich,dairy_free, low_fat, ethnicity], recipe => {
+            return t.any('select ingredient_id from recipe_ingredients where recipe_id = $1', recipe.id)
+                .then(ingredients=> {
+                    var ingredientIdsArray = [];
+                    for (var i = 0; i < ingredients.length; i++) {
+                        ingredientIdsArray.push(ingredients[i].ingredient_id);
+                    }
+                    return t.any("select i.id, i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
+                        "i.low_fat, i.ethnicity, b.name as brand_name, sh.name as shop_name, c.name as city_name from ingredients i" +
+                        " INNER JOIN shops sh ON i.shop_id = sh.id JOIN brands b ON i.brand_id = b.id JOIN cities c ON " +
+                        "i.city_id = c.ID where i.ID = ANY($1::int[])", [ingredientIdsArray])
+                    .then(function (ingredients) {
+                        recipe.ingredients = ingredients;
+                        return recipe;
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                });
+            }).then(t.batch);
+        })
+        .then(data => {
             res.status(200)
                 .json({
                     status: 'success',
                     data: data,
-                    message: 'Retrieved ALL recipes'
+                    message: 'Retrieved all searched recipes'
                 });
         })
-        .catch(function (err) {
+        .catch(error => {
             return next(err);
         });
 }
