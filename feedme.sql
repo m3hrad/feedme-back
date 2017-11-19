@@ -19,6 +19,14 @@ CREATE TABLE recipes (
   recipe_text VARCHAR,
   duration FLOAT,
   easy BOOLEAN,
+  vegan BOOLEAN,
+  vegetarian BOOLEAN,
+  gluten_free BOOLEAN,
+  low_carb BOOLEAN,
+  protein_rich BOOLEAN,
+  dairy_free BOOLEAN,
+  low_fat BOOLEAN,
+  ethnicity VARCHAR,
   link VARCHAR,
   deleted BOOLEAN DEFAULT FALSE
 );

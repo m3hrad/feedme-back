@@ -14,10 +14,20 @@ var db = pgp(connectionString);
 // add query functions
 
 function getAllRecipes(req, res, next) {
-    var pattern = typeof req.query.name !== 'undefined' ? '%' + req.query.name + '%' : '%' ;
-    console.log(pattern);
 
-    db.any('select * from recipes where deleted = false and name LIKE $1', pattern)
+    const name = typeof req.query.name === 'undefined' ? '%' : '%' + req.query.name + '%';
+    const vegan = typeof req.query.vegan === 'undefined' ? true : 'vegan = ' + req.query.vegan;
+    const vegetarian = typeof req.query.vegetarian === 'undefined' ? true : 'vegetarian = ' + req.query.vegetarian;
+    const gluten_free = typeof req.query.gluten_free === 'undefined' ? true : 'gluten_free = ' +  req.query.gluten_free;
+    const low_carb = typeof req.query.low_carb === 'undefined' ? true : 'low_carb = ' + req.query.low_carb;
+    const protein_rich = typeof req.query.protein_rich === 'undefined' ? true : 'protein_rich = ' + req.query.protein_rich;
+    const dairy_free = typeof req.query.dairy_free === 'undefined' ? true : 'dairy_free = ' + req.query.dairy_free;
+    const low_fat = typeof req.query.low_fat === 'undefined' ? true : 'low_fat = ' + req.query.low_fat;
+    const ethnicity = typeof req.query.ethnicity === 'undefined' ? true : 'ethnicity like %' + req.query.ethnicity + '%';
+
+    db.any('select * from recipes where deleted = false and name LIKE $1 and $2:raw and $3:raw and $4:raw and $5:raw' +
+        ' and $6:raw and $7:raw and $8:raw and $9:raw',[name, vegan, vegetarian, gluten_free, low_carb,
+        protein_rich,dairy_free, low_fat, ethnicity])
         .then(function (data) {
             res.status(200)
                 .json({
@@ -145,9 +155,19 @@ function createRecipe(req, res ,next){
     var duration = req.body.duration || null;
     var easy = req.body.easy || false;
     var link = req.body.link || null;
+    var vegan = req.body.vegan || false;
+    var vegetarian = req.body.vegetarian || false;
+    var gluten_free = req.body.gluten_free || false;
+    var low_carb = req.body.low_carb || false;
+    var protein_rich = req.body.protein_rich || false;
+    var dairy_free = req.body.dairy_free || false;
+    var low_fat = req.body.low_fat || false;
+    var ethnicity = req.body.ethnicity || null;
 
-    db.any('INSERT into recipes (user_id, name, description, recipe_text, duration, easy, link) VALUES' +
-        '($1, $2, $3, $4, $5, $6, $7)',[user_id, name, description, recipe_text, duration, easy, link])
+    db.any('INSERT into recipes (user_id, name, description, recipe_text, duration, easy, link, vegan, vegetarian, ' +
+        'gluten_free, low_carb, protein_rich, dairy_free, low_fat, ethnicity ) VALUES' +
+        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',[user_id, name, description, recipe_text,
+        duration, easy, link, vegan, vegetarian, gluten_free, low_carb, protein_rich, dairy_free, low_fat, ethnicity])
         .then(function (data) {
             res.status(200)
                 .json({
