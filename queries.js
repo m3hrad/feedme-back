@@ -92,7 +92,7 @@ function getSingleRecipe(req, res, next) {
                             ingredientIdsArray.push(ingredientsIDs[i].ingredient_id);
                         }
                         //get the ingredients
-                        db.any("select i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
+                        db.any("select i.id, i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
                             "i.low_fat, i.ethnicity, b.name as brand_name, sh.name as shop_name, c.name as city_name from ingredients i" +
                             " INNER JOIN shops sh ON i.shop_id = sh.id JOIN brands b ON i.brand_id = b.id JOIN cities c ON " +
                             "i.city_id = c.ID where i.ID = ANY($1::int[])", [ingredientIdsArray])
