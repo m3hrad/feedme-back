@@ -128,7 +128,10 @@ function getSingleRecipe(req, res, next) {
 
 function getSingleIngredient(req, res, next) {
     //get the ingredient info
-    db.any('select * from ingredients where id = $1 AND deleted = false', parseInt(req.params.id))
+    db.any("select i.id, i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
+        "i.low_fat, i.ethnicity, b.name as brand_name, sh.name as shop_name, c.name as city_name from ingredients i" +
+        " INNER JOIN shops sh ON i.shop_id = sh.id JOIN brands b ON i.brand_id = b.id JOIN cities c ON " +
+        "i.city_id = c.ID where i.ID = $1 and i.deleted = false", parseInt(req.params.id))
         .then(function (ingredientData) {
             if (ingredientData.length > 0) {
             //get the recipes list having the ingredient
