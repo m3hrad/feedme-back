@@ -1,15 +1,15 @@
-var promise = require('bluebird');
+let promise = require('bluebird');
 
-var options = {
+let options = {
     // Initialization Options
     promiseLib: promise
 };
 
-var pgp = require('pg-promise')(options);
+let pgp = require('pg-promise')(options);
 
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/feedme';
+let connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/feedme';
 
-var db = pgp(connectionString);
+let db = pgp(connectionString);
 
 // add query functions
 
@@ -32,8 +32,8 @@ function getAllRecipes(req, res, next) {
             protein_rich,dairy_free, low_fat, ethnicity], recipe => {
             return t.any('select ingredient_id from recipe_ingredients where recipe_id = $1', recipe.id)
                 .then(ingredients=> {
-                    var ingredientIdsArray = [];
-                    for (var i = 0; i < ingredients.length; i++) {
+                    let ingredientIdsArray = [];
+                    for (let i = 0; i < ingredients.length; i++) {
                         ingredientIdsArray.push(ingredients[i].ingredient_id);
                     }
                     return t.any("select i.id, i.name, i.vegan, i.vegetarian, i.gluten_free, i.low_carb, i.protein_rich, i.dairy_free," +
@@ -64,7 +64,7 @@ function getAllRecipes(req, res, next) {
 }
 
 function getAllIngredients(req, res, next) {
-    var pattern = typeof req.query.name !== 'undefined' ? '%' + req.query.name + '%' : '%' ;
+    let pattern = typeof req.query.name !== 'undefined' ? '%' + req.query.name + '%' : '%' ;
     db.any('select * from ingredients where deleted = false and name LIKE $1', pattern)
         .then(function (data) {
             res.status(200)
@@ -87,8 +87,8 @@ function getSingleRecipe(req, res, next) {
             //get the ingredients list
                 db.any('select ingredient_id from recipe_ingredients where recipe_id = $1', parseInt(req.params.id))
                     .then(function (ingredientsIDs) {
-                        var ingredientIdsArray = [];
-                        for (var i = 0; i < ingredientsIDs.length; i++) {
+                        let ingredientIdsArray = [];
+                        for (let i = 0; i < ingredientsIDs.length; i++) {
                             ingredientIdsArray.push(ingredientsIDs[i].ingredient_id);
                         }
                         //get the ingredients
@@ -137,8 +137,8 @@ function getSingleIngredient(req, res, next) {
             //get the recipes list having the ingredient
             db.any('select recipe_id from recipe_ingredients where ingredient_id = $1', parseInt(req.params.id))
                 .then(function (recipesIDs) {
-                    var recipesIDsArray = [];
-                    for (var i = 0; i < recipesIDs.length; i++) {
+                    let recipesIDsArray = [];
+                    for (let i = 0; i < recipesIDs.length; i++) {
                         recipesIDsArray.push(recipesIDs[i].recipe_id);
                     }
                     //get the recipes
@@ -173,51 +173,62 @@ function getSingleIngredient(req, res, next) {
 }
 
 function createRecipe(req, res ,next){
-    var user_id = parseInt(req.body.user_id);
-    var name = req.body.name;
-    var description = req.body.description || '';
-    var recipe_text = req.body.recipe_text || '';
-    var duration = req.body.duration || null;
-    var easy = req.body.easy || false;
-    var link = req.body.link || null;
-    var vegan = req.body.vegan || false;
-    var vegetarian = req.body.vegetarian || false;
-    var gluten_free = req.body.gluten_free || false;
-    var low_carb = req.body.low_carb || false;
-    var protein_rich = req.body.protein_rich || false;
-    var dairy_free = req.body.dairy_free || false;
-    var low_fat = req.body.low_fat || false;
-    var ethnicity = req.body.ethnicity || null;
+    let user_id = parseInt(req.body.user_id) || 1;
+    let name = req.body.name;
+    let description = req.body.description || '';
+    let recipe_text = req.body.recipe_text || '';
+    let duration = req.body.duration || null;
+    let easy = req.body.easy || false;
+    let link = req.body.link || null;
+    let vegan = req.body.vegan || false;
+    let vegetarian = req.body.vegetarian || false;
+    let gluten_free = req.body.gluten_free || false;
+    let low_carb = req.body.low_carb || false;
+    let protein_rich = req.body.protein_rich || false;
+    let dairy_free = req.body.dairy_free || false;
+    let low_fat = req.body.low_fat || false;
+    let ethnicity = req.body.ethnicity || null;
+    let ingredients = req.body.ingredients;
 
-    db.any('INSERT into recipes (user_id, name, description, recipe_text, duration, easy, link, vegan, vegetarian, ' +
+    const cs = new pgp.helpers.ColumnSet(['recipe_id', 'ingredient_id' ,'quantity', 'unit'], {table: 'recipe_ingredients'});
+
+    db.one('INSERT into recipes (user_id, name, description, recipe_text, duration, easy, link, vegan, vegetarian, ' +
         'gluten_free, low_carb, protein_rich, dairy_free, low_fat, ethnicity ) VALUES' +
-        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)',[user_id, name, description, recipe_text,
+        '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id',[user_id, name, description, recipe_text,
         duration, easy, link, vegan, vegetarian, gluten_free, low_carb, protein_rich, dairy_free, low_fat, ethnicity])
-        .then(function (data) {
-            res.status(200)
-                .json({
-                    status: 'success',
-                    data: data,
-                    message: 'Recipe created.'
-                });
-        })
+        .then(function (recipe) {
+            ingredients.forEach(function(obj) { obj.recipe_id = recipe.id; });
+            const query = pgp.helpers.insert(ingredients, cs);
+            return db.none(query)
+                .then(function (data) {
+                    res.status(200)
+                        .json({
+                            status: 'success',
+                            data: recipe,
+                            message: 'Recipe created.'
+                        });
+                })
+                .catch(function (err) {
+                    return next(err);
+                })
+            })
         .catch(function (err) {
             return next(err);
         });
 }
 
 function createIngredient(req, res ,next){
-    var name = req.body.name;
-    var city_id = parseInt(req.body.city_id) || 1;
-    var vegan = req.body.vegan || false;
-    var vegetarian = req.body.vegetarian || false;
-    var gluten_free = req.body.gluten_free || false;
-    var low_carb = req.body.low_carb || false;
-    var dairy_free = req.body.dairy_free || null;
-    var low_fat = req.body.low_fat || null;
-    var ethnicity = req.body.ethnicity || null;
-    var brand_id = parseInt(req.body.brand_id) || 1;
-    var shop_id = parseInt(req.body.shop_id) || 1;
+    let name = req.body.name;
+    let city_id = parseInt(req.body.city_id) || 1;
+    let vegan = req.body.vegan || false;
+    let vegetarian = req.body.vegetarian || false;
+    let gluten_free = req.body.gluten_free || false;
+    let low_carb = req.body.low_carb || false;
+    let dairy_free = req.body.dairy_free || null;
+    let low_fat = req.body.low_fat || null;
+    let ethnicity = req.body.ethnicity || null;
+    let brand_id = parseInt(req.body.brand_id) || 1;
+    let shop_id = parseInt(req.body.shop_id) || 1;
 
     db.any('INSERT into ingredients (name, city_id, vegan, vegetarian, gluten_free, low_carb, dairy_free, low_fat, ' +
         'ethnicity, brand_id, shop_id ) VALUES' +

@@ -16,6 +16,7 @@ router.get('/api/recipes/:id', db.getSingleRecipe);
 router.post('/api/recipes', db.createRecipe);
 router.put('/api/recipes/:id', db.updateRecipe);
 router.delete('/api/recipes/:id', db.removeRecipe);
+// router.post('/api/recipes/:id/ingredients', db.addIngredientToRecipe);
 //
 router.get('/api/ingredients', db.getAllIngredients);
 router.get('/api/ingredients/:id', db.getSingleIngredient);
