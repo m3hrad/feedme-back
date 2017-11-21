@@ -188,7 +188,7 @@ function createRecipe(req, res ,next){
     let dairy_free = req.body.dairy_free || false;
     let low_fat = req.body.low_fat || false;
     let ethnicity = req.body.ethnicity || null;
-    let ingredients = req.body.ingredients;
+    let ingredients = req.body.ingredients || [];
 
     const cs = new pgp.helpers.ColumnSet(['recipe_id', 'ingredient_id' ,'quantity', 'unit'], {table: 'recipe_ingredients'});
 
@@ -197,20 +197,32 @@ function createRecipe(req, res ,next){
         '($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id',[user_id, name, description, recipe_text,
         duration, easy, link, vegan, vegetarian, gluten_free, low_carb, protein_rich, dairy_free, low_fat, ethnicity])
         .then(function (recipe) {
-            ingredients.forEach(function(obj) { obj.recipe_id = recipe.id; });
-            const query = pgp.helpers.insert(ingredients, cs);
-            return db.none(query)
-                .then(function (data) {
-                    res.status(200)
-                        .json({
-                            status: 'success',
-                            data: recipe,
-                            message: 'Recipe created.'
-                        });
-                })
-                .catch(function (err) {
-                    return next(err);
-                })
+            if (ingredients.length > 0) {
+                ingredients.forEach(function (obj) {
+                    obj.recipe_id = recipe.id;
+                });
+                const query = pgp.helpers.insert(ingredients, cs);
+                return db.none(query)
+                    .then(function (data) {
+                        res.status(200)
+                            .json({
+                                status: 'success',
+                                data: recipe,
+                                message: 'Recipe created.'
+                            });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    })
+                }
+            else {
+                res.status(200)
+                    .json({
+                        status: 'success',
+                        data: recipe,
+                        message: 'Recipe created.'
+                    });
+                }
             })
         .catch(function (err) {
             return next(err);
